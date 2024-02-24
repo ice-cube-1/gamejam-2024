@@ -2,6 +2,25 @@ from random import randint
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, join_room
 from flask_cors import CORS
+import threading
+
+
+def dragon():
+    while True:
+        threading.Event().wait(180)
+        print('deleting player')
+        with playerLock:
+            lowestHP = [[100,-1],[100,-1]]
+            for i in players:
+                if i.hp<lowestHP[i.team][0] and i.visible == True:
+                    lowestHP[i.team]=i.hp,i.id
+            if lowestHP[0][1]!=-1:
+                players[lowestHP[0][1]].visible=False
+            if lowestHP[1][1]!=-1:
+                players[lowestHP[1][1]].visible=False
+            print(lowestHP)
+        socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
+
 
 gridlx = 80
 gridly = 80
@@ -76,7 +95,6 @@ class Player:
         elif charin == "Space":
             attack(self)
         elif charin == "E":
-            print('hi')
             self = interact(self)
     def to_dict(self):
         return {
@@ -94,8 +112,13 @@ players = []
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key='notVerySecret'
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading')
+# socketio = SocketIO(app)
 CORS(app)
+roundtimer=threading.Thread(target=dragon)
+roundtimer.start()
+playerLock = threading.Lock()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
