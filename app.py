@@ -13,11 +13,12 @@ for i in range(gridly):
     else:
         grid[i][-1] = 1
         grid[i][0] = 1
-    for j in range(gridlx):
-        if randint(0,9) < 1:
-            grid[i][j] = 1
-        elif randint(0,20) < 1:
-            grid[i][j] = 2
+    for j in range(1,gridlx):
+        if (0<i<gridlx-1) and (0<i<gridly-1):
+            if randint(0,9) < 1:
+                grid[i][j] = 1
+            elif randint(0,20) < 1:
+                grid[i][j] = 2
 
 def checkplayer(x,y):
     for i in players:
@@ -35,6 +36,8 @@ def attack(player):
                 players[i].hp-=1
                 if players[i].hp <= 0:
                     players[i].visible = False
+                    cointotals[players[i].id]-=players[i].coincount
+                    socketio.emit('cointotal',cointotals)
 
 def interact(player):
     if grid[player.y][player.x] == 2:
@@ -59,16 +62,16 @@ class Player:
         self.sabotagecount = 0
     def move(self, charin):
         if charin == "W":
-            if grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1):
+            if (grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1)) or self.visible == False:
                 self.y-=1
         elif charin == "S":
-            if grid[self.y+1][self.x] != 1 and checkplayer(self.x,self.y+1):
+            if (grid[self.y+1][self.x] != 1 and checkplayer(self.x,self.y+1)) or self.visible == False:
                 self.y+=1
         elif charin == "A":
-            if grid[self.y][self.x-1] != 1 and checkplayer(self.x-1,self.y):
+            if (grid[self.y][self.x-1] != 1 and checkplayer(self.x-1,self.y)) or self.visible == False:
                 self.x-=1
         elif charin == "D":
-            if grid[self.y][self.x+1] != 1 and checkplayer(self.x+1,self.y):
+            if (grid[self.y][self.x+1] != 1 and checkplayer(self.x+1,self.y)) or self.visible == False:
                 self.x+=1
         elif charin == "Space":
             attack(self)
@@ -81,7 +84,9 @@ class Player:
             'y': self.y,
             'color': self.color,
             'hp': self.hp,
-            'visible': self.visible
+            'visible': self.visible,
+            'coincount': self.coincount,
+            'sabotagecount':self.sabotagecount
         }
 
 players = []

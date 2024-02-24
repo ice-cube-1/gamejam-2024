@@ -58,12 +58,14 @@ var canvas = document.getElementById("canvas");
                 ctx.fillRect(x, y, scale, scale);
             }
         }
+        ctx.fillStyle = 'black';
         for (let i = 0; i < playerpos.length; i++) { // puts text on characters displaying HP
-            ctx.fillStyle = 'black';
-            if (playerpos[i]['visible'] == True) {
+            if (playerpos[i]['visible'] == true) {
                 ctx.fillText(playerpos[i]['hp'], (playerpos[i]['x'] - screenxoffset + 0.85) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
+                ctx.fillText(playerpos[i]['coincount'], (playerpos[i]['x'] - screenxoffset) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
             }
         }
+        console.log(playerpos)
     });
     $(document).keydown(function(e) {
         var direction = '';
