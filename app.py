@@ -6,6 +6,7 @@ from flask_cors import CORS
 gridlx = 80
 gridly = 80
 grid = [[0 for i in range(gridlx)] for j in range(gridly)]
+cointotals=[0,0]
 for i in range(gridly):
     if i == 0 or i == gridly-1:
         grid[i] = [1 for i in range(gridlx)]
@@ -20,7 +21,7 @@ for i in range(gridly):
 
 def checkplayer(x,y):
     for i in players:
-        if i.x == x and i.y == y:
+        if i.x == x and i.y == y and i.visible == True:
             return False
     return True
 
@@ -29,13 +30,14 @@ def attack(player):
         if abs(players[i].x-player.x)<=1 and abs(players[i].y-player.y)<=1 and players[i] != player:
             players[i].hp-=1
             if players[i].hp <= 0:
-                players[i].x = 9999
-                players[i].y = 9999
+                players[i].visible = False
 
 def interact(player):
     if grid[player.y][player.x] == 2:
         print('hasdf')
         player.coincount+=1
+        cointotals[player.team]+=1
+        socketio.emit('cointotal',cointotals)
         grid[player.y][player.x] = 0
         socketio.emit('base_grid', grid)
     return player
@@ -50,7 +52,7 @@ class Player:
         self.color = [self.team*255,0,((self.team+1)%2)*255]
         self.hp = 5
         self.coincount = 0
-        
+        self.visible = True
     def move(self, charin):
         if charin == "W":
             if grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1):
@@ -73,7 +75,9 @@ class Player:
         return {
             'x': self.x,
             'y': self.y,
-            'color': self.color
+            'color': self.color,
+            'hp': self.hp,
+            'visible': self.visible
         }
 
 players = []

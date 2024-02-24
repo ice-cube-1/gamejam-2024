@@ -13,6 +13,10 @@ var canvas = document.getElementById("canvas");
         id = data
         console.log('Your client ID is: ' + data);
     });
+    socket.on('cointotal',function(data) {
+        console.log(data)
+    })
+
     socket.on('new_positions', function(data) {
         var playerpos = data.objects;
         screenxoffset = playerpos[id]['x']-screensize[0]/2
@@ -40,7 +44,8 @@ var canvas = document.getElementById("canvas");
             }
         }
         for (let i = 0; i<playerpos.length; i++) {
-            if ((0 <= playerpos[i]['x'] - screenxoffset && playerpos[i]['x'] - screenxoffset < screensize[0]) && (0 <= playerpos[i]['y'] - screenyoffset && playerpos[i]['y'] - screenyoffset < screensize[1])) {
+            console.log(playerpos[i]['visible'])
+            if ((0 <= playerpos[i]['x'] - screenxoffset && playerpos[i]['x'] - screenxoffset < screensize[0]) && (0 <= playerpos[i]['y'] - screenyoffset && playerpos[i]['y'] - screenyoffset < screensize[1]) && playerpos[i]['visible'] == true) {
                 gridToRender[playerpos[i]['y']-screenyoffset][playerpos[i]['x']-screenxoffset] = playerpos[i]['color'];
             }
         }
@@ -51,6 +56,12 @@ var canvas = document.getElementById("canvas");
                 var y = i * scale;
                 ctx.fillStyle = `rgb(${gridToRender[i][j].join(',')})`; // Convert RGB array to string
                 ctx.fillRect(x, y, scale, scale);
+            }
+        }
+        for (let i = 0; i < playerpos.length; i++) { // puts text on characters displaying HP
+            ctx.fillStyle = 'black';
+            if (playerpos[i]['visible'] == True) {
+                ctx.fillText(playerpos[i]['hp'], (playerpos[i]['x'] - screenxoffset + 0.85) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
             }
         }
     });
