@@ -28,13 +28,16 @@ def checkplayer(x,y):
 def attack(player):
     for i in range(len(players)):
         if abs(players[i].x-player.x)<=1 and abs(players[i].y-player.y)<=1 and players[i] != player:
-            players[i].hp-=1
-            if players[i].hp <= 0:
-                players[i].visible = False
+            if players[i].team != players[player.id].team or players[player.id].sabotagecount <3:
+                if players[i].team == players[player.id].team:
+                    players[player.id].sabotagecount+=1
+                    players[player.id].hp+=1
+                players[i].hp-=1
+                if players[i].hp <= 0:
+                    players[i].visible = False
 
 def interact(player):
     if grid[player.y][player.x] == 2:
-        print('hasdf')
         player.coincount+=1
         cointotals[player.team]+=1
         socketio.emit('cointotal',cointotals)
@@ -53,6 +56,7 @@ class Player:
         self.hp = 5
         self.coincount = 0
         self.visible = True
+        self.sabotagecount = 0
     def move(self, charin):
         if charin == "W":
             if grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1):
