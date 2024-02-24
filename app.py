@@ -64,6 +64,7 @@ def interact(player):
         cointotals[player.team]+=1
         socketio.emit('cointotal',cointotals)
         grid[player.y][player.x] = 0
+        grid[randint(1,gridly)][randint(1,gridlx)] = 2
         socketio.emit('base_grid', grid)
     return player
 
@@ -154,4 +155,5 @@ def handle_update_position(data):
     
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True) # LOCALHOST
+    # socketio.run(app, debug=True,host='0.0.0.0',allow_unsafe_werkzeug=True, port=80) # SERVER
