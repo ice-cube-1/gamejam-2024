@@ -60,12 +60,15 @@ def checkplayer(x,y):
 def attack(player):
     for i in range(len(players)):
         if abs(players[i].x-player.x)<=1 and abs(players[i].y-player.y)<=1 and players[i] != player:
-            if players[i].team != players[player.id].team or players[player.id].sabotagecount <3:
+            if (players[i].team != players[player.id].team and players[player.id].coincount >= 5) or players[player.id].sabotagecount <3:
                 if players[i].team == players[player.id].team:
                     players[player.id].sabotagecount+=1
                     players[player.id].hp+=1
+                    players[i].hp-=2
+                else:
+                    player[player.id].coincount-=5
+                    cointotals[player[player.id].team]-=5
                     players[i].hp-=1
-                players[i].hp-=1
                 if players[i].hp <= 0:
                     players[i].visible = False
 
