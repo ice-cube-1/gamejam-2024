@@ -8,6 +8,9 @@ var canvas = document.getElementById("canvas");
     var screensize = [20,20];
     var showLeaderboard = false;
     var lastmove = Date.now()
+    var playerpos = [];
+    var teamBlueCoins = 0;
+    var teamOrangeCoins = 0;
     socket.on('base_grid', function(data) {
         grid = data
     });
@@ -28,8 +31,8 @@ var canvas = document.getElementById("canvas");
     })
 
     socket.on('new_positions', function(data) {
-        if (showLeaderboard == false){
-            var playerpos = data.objects;
+        var playerpos = data.objects;
+        if (showLeaderboard == true){
             screenxoffset = playerpos[id]['x']-screensize[0]/2
             screenyoffset = playerpos[id]['y']-screensize[1]/2
             if (screenxoffset < 0) {
@@ -78,9 +81,47 @@ var canvas = document.getElementById("canvas");
             }
             console.log(playerpos)
         } else{
-            
+            var playersStats = [];
+
+            ctx.clearRect;
+            ctx.font = "30px Verdana";
+            ctx.textAlign = "center";
+            ctx.fillText("Leaderboard", 400, 50);
+
+            //getting total coins for each team
+            for (let i=0; i<playerpos.length; i++) {
+                if (playerpos[i]['team'] == 0 && playerpos[i]['visible']){
+                    teamBlueCoins += playerpos[i]['coincount']
+                } else if (playerpos[i]['team'] == 1 && playerpos[i]['visible']){
+                    teamOrangeCoins += playerpos[i]['coincount']
+                }
+            }
+
+            if (teamOrangeCoins > teamBlueCoins){
+                ctx.fillText("Orange team wins!", 400, 100);
+            } else if (teamBlueCoins > teamOrangeCoins){
+                ctx.fillText("Blue team wins!", 400, 100);
+            } else{
+                ctx.fillText("It's a draw!", 400, 100);
+            }
+
+            ctx.font = "25px Verdana";
+            ctx.textAlign = "right";
+            ctx.fillText(("Orange team - " + teamOrangeCoins + " coins"), 350, 150);
+            ctx.textAlign = 'left';
+            ctx.fillText(("Blue team - " + teamBlueCoins + " coins"), 450, 150);
+
+            ctx.font = "18px Verdana"
+            ctx.fillText("almond - dead", 480, 200);
+
+            var orangeX = 380;
+            var blueX = 480;
+            var orangeHeight = 200;
+            var blueHeight = 200;
+
         }
     });
+    
     $(document).keydown(function(e) {
         var currentTime = Date.now();
         var direction = '';
