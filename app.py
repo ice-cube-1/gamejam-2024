@@ -6,21 +6,29 @@ import threading
 
 
 def dragon():
+    modtimer=0
     while True:
-        threading.Event().wait(180)
-        print('deleting player')
-        with playerLock:
-            lowestHP = [[100,-1],[100,-1]]
-            for i in players:
-                if i.hp<lowestHP[i.team][0] and i.visible == True:
-                    lowestHP[i.team]=i.hp,i.id
-            if lowestHP[0][1]!=-1:
-                players[lowestHP[0][1]].visible=False
-            if lowestHP[1][1]!=-1:
-                players[lowestHP[1][1]].visible=False
-            print(lowestHP)
-        socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
-
+        threading.Event().wait(60)
+        if modtimer%3!=0:
+            print('deleting player')
+            with playerLock:
+                lowestHP = [100,-1]
+                for i in players:
+                    if i.hp<lowestHP[0] and i.visible == True:
+                        lowestHP[i.team]=i.hp,i.id
+                if lowestHP[1]!=-1:
+                    players[lowestHP[1][1]].visible=False
+                print(lowestHP)
+            socketio.emit('dragon')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
+        else:
+            socketio.emit('outputscores')
+            threading.Event().wait(20)
+            socketio.emit('startround')
+            with playerLock:
+                for i in range(len(players)):
+                    players.visible = True
+        modtimer+=1
 
 gridlx = 80
 gridly = 80
@@ -36,8 +44,9 @@ for i in range(gridly):
         if (0<i<gridlx-1) and (0<i<gridly-1):
             if randint(0,9) < 1:
                 grid[i][j] = 1
-            elif randint(0,20) < 1:
+            elif randint(0,50) < 1:
                 grid[i][j] = 2
+
 
 def checkplayer(x,y):
     for i in players:
@@ -76,7 +85,7 @@ class Player:
         self.name = name
         self.team = self.id%2
         self.color = [self.team*255,0,((self.team+1)%2)*255]
-        self.hp = 5
+        self.hp = 20
         self.coincount = 0
         self.visible = True
         self.sabotagecount = 0
@@ -142,6 +151,7 @@ def handle_connect():
     if client_id == -1:
         players.append(Player(randint(0,gridlx-1),randint(0,gridly-1),playerName,len(players)))
         client_id = len(players)-1
+    players[client_id].visible = False
     join_room(client_id)
     socketio.emit('client_id', client_id, room=client_id)
     socketio.emit('base_grid', grid)
