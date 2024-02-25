@@ -30,7 +30,8 @@ def dragon():
             socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
             with playerLock:
                 for i in range(len(players)):
-                    players.visible = True
+                    players[i].visible = True
+                    players[i].hp = 20
         modtimer+=1
 
 gridlx = 80
