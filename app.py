@@ -40,17 +40,16 @@ grid = [[0 for i in range(gridlx)] for j in range(gridly)]
 cointotals=[0,0]
 for i in range(gridly):
     if i == 0 or i == gridly-1:
-        grid[i] = [1 for i in range(gridlx)]
+        grid[i] = [randint(3,5) for i in range(gridlx)]
     else:
-        grid[i][-1] = 1
-        grid[i][0] = 1
+        grid[i][-1] = randint(3,5)
+        grid[i][0] = randint(3,5)
     for j in range(1,gridlx):
         if (0<i<gridlx-1) and (0<i<gridly-1):
             if randint(0,9) < 1:
-                grid[i][j] = 1
+                grid[i][j] = randint(3,5)
             elif randint(0,50) < 1:
                 grid[i][j] = 2
-
 
 def checkplayer(x,y):
     for i in players:
@@ -97,21 +96,22 @@ class Player:
         self.sabotagecount = 0
     def move(self, charin):
         if charin == "W":
-            if (grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1)) or self.visible == False:
+            if (grid[self.y-1][self.x] <3 and checkplayer(self.x,self.y-1)) or self.visible == False:
                 self.y-=1
         elif charin == "S":
-            if (grid[self.y+1][self.x] != 1 and checkplayer(self.x,self.y+1)) or self.visible == False:
+            if (grid[self.y+1][self.x] <3 and checkplayer(self.x,self.y+1)) or self.visible == False:
                 self.y+=1
         elif charin == "A":
-            if (grid[self.y][self.x-1] != 1 and checkplayer(self.x-1,self.y)) or self.visible == False:
+            if (grid[self.y][self.x-1] <3 and checkplayer(self.x-1,self.y)) or self.visible == False:
                 self.x-=1
         elif charin == "D":
-            if (grid[self.y][self.x+1] != 1 and checkplayer(self.x+1,self.y)) or self.visible == False:
+            if (grid[self.y][self.x+1] <3 and checkplayer(self.x+1,self.y)) or self.visible == False:
                 self.x+=1
         elif charin == "Space":
             attack(self)
         elif charin == "E":
-            self = interact(self)
+            if self.visible == True:
+                self = interact(self)
     def to_dict(self):
         return {
             'x': self.x,
@@ -121,7 +121,8 @@ class Player:
             'visible': self.visible,
             'coincount': self.coincount,
             'sabotagecount':self.sabotagecount,
-            'team':self.team
+            'team':self.team,
+            'name':self.name
         }
 
 players = []

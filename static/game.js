@@ -49,11 +49,11 @@ var canvas = document.getElementById("canvas");
                 gridToRender[i] = [];
                 for (let j = 0; j < screensize[0]; j++) {
                     if (grid[i+screenyoffset][j+screenxoffset] == 0) {
-                        gridToRender[i][j] = [255,255,255];
+                        gridToRender[i][j] = 'blank';
                     } else if (grid[i+screenyoffset][j+screenxoffset] == 2) {
-                        gridToRender[i][j] = [0,255,0];
+                        gridToRender[i][j] = 'coin';
                     } else {
-                        gridToRender[i][j] = [0,0,0];
+                        gridToRender[i][j] = grid[i+screenyoffset][j+screenxoffset]-3;
                     }
                 }
             }
@@ -64,17 +64,35 @@ var canvas = document.getElementById("canvas");
                 }
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (var i = 0; i < screensize[1]; i++) {
+            for (var i = 0; i < screensize[1]; i++) { // actually draws the rectangles
                 for (var j = 0; j < screensize[0]; j++) {
                     var x = j * scale;
                     var y = i * scale;
-                    ctx.fillStyle = `rgb(${gridToRender[i][j].join(',')})`; // Convert RGB array to string
-                    ctx.fillRect(x, y, scale, scale);
+                    ctx.fillStyle = gridToRender[i][j];
+                    if (gridToRender[i][j] == 'coin') {
+                        var img = new Image();
+                        img.src = 'static/images/coin.jpeg'
+                        console.log('here')
+                        ctx.drawImage(img, x, y, scale, scale);
+                    } else if (gridToRender[i][j] != 'blank') {
+                        var img = new Image();
+                        var images = ['rock1.jpeg','rock2.jpeg','rock3.jpeg']
+                        console.log(images[gridToRender[i][j]])
+                        img.src = `static/images/${images[gridToRender[i][j]]}`
+                        ctx.drawImage(img, x, y, scale, scale);      
+                    } else {
+                        ctx.fillStyle = 'rgb(210,245,135)'
+                        ctx.fillRect(x,y,scale,scale)
+                    }
                 }
             }
             ctx.fillStyle = 'black';
             for (let i = 0; i < playerpos.length; i++) { // puts text on characters displaying HP
                 if (playerpos[i]['visible'] == true) {
+                    var img = new Image
+                    var images = ['bluesheep.jpeg','redsheep.jpeg']
+                    img.src=`static/images/${images[playerpos[i].team]}`
+                    ctx.drawImage(img,(playerpos[i]['x']-screenxoffset)*scale, (playerpos[i]['y']-screenyoffset)*scale, scale, scale)
                     ctx.fillText(playerpos[i]['hp'], (playerpos[i]['x'] - screenxoffset + 0.85) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
                     ctx.fillText(playerpos[i]['coincount'], (playerpos[i]['x'] - screenxoffset) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
                 }
