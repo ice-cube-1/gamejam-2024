@@ -121,7 +121,8 @@ class Player:
             'visible': self.visible,
             'coincount': self.coincount,
             'sabotagecount':self.sabotagecount,
-            'team':self.team
+            'team':self.team,
+            'name':self.name
         }
 
 players = []
@@ -158,7 +159,7 @@ def handle_connect():
     if client_id == -1:
         players.append(Player(randint(0,gridlx-1),randint(0,gridly-1),playerName,len(players)))
         client_id = len(players)-1
-    # players[client_id].visible = False
+    players[client_id].visible = False
     join_room(client_id)
     socketio.emit('client_id', client_id, room=client_id)
     socketio.emit('base_grid', grid)
