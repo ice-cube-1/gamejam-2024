@@ -96,21 +96,22 @@ class Player:
         self.sabotagecount = 0
     def move(self, charin):
         if charin == "W":
-            if (grid[self.y-1][self.x] != 1 and checkplayer(self.x,self.y-1)) or self.visible == False:
+            if (grid[self.y-1][self.x] <3 and checkplayer(self.x,self.y-1)) or self.visible == False:
                 self.y-=1
         elif charin == "S":
-            if (grid[self.y+1][self.x] != 1 and checkplayer(self.x,self.y+1)) or self.visible == False:
+            if (grid[self.y+1][self.x] <3 and checkplayer(self.x,self.y+1)) or self.visible == False:
                 self.y+=1
         elif charin == "A":
-            if (grid[self.y][self.x-1] != 1 and checkplayer(self.x-1,self.y)) or self.visible == False:
+            if (grid[self.y][self.x-1] <3 and checkplayer(self.x-1,self.y)) or self.visible == False:
                 self.x-=1
         elif charin == "D":
-            if (grid[self.y][self.x+1] != 1 and checkplayer(self.x+1,self.y)) or self.visible == False:
+            if (grid[self.y][self.x+1] <3 and checkplayer(self.x+1,self.y)) or self.visible == False:
                 self.x+=1
         elif charin == "Space":
             attack(self)
         elif charin == "E":
-            self = interact(self)
+            if self.visible == True:
+                self = interact(self)
     def to_dict(self):
         return {
             'x': self.x,
