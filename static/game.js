@@ -86,6 +86,10 @@ var canvas = document.getElementById("canvas");
             ctx.fillStyle = 'black';
             for (let i = 0; i < playerpos.length; i++) { // puts text on characters displaying HP
                 if (playerpos[i]['visible'] == true) {
+                    var img = new Image
+                    var images = ['bluesheep.jpeg','redsheep.jpeg']
+                    img.src=`static/images/${images[playerpos[i].team]}`
+                    ctx.drawImage(img,(playerpos[i]['x']-screenxoffset)*scale, (playerpos[i]['y']-screenyoffset)*scale, scale, scale)
                     ctx.fillText(playerpos[i]['hp'], (playerpos[i]['x'] - screenxoffset + 0.85) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
                     ctx.fillText(playerpos[i]['coincount'], (playerpos[i]['x'] - screenxoffset) * scale, (playerpos[i]['y'] - screenyoffset) * scale)
                 }
