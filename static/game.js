@@ -8,6 +8,14 @@ var canvas = document.getElementById("canvas");
     var screensize = [20,20];
     var showLeaderboard = false;
     var lastmove = Date.now()
+    let video = document.getElementById('video');
+socket.on('dragon', function() {
+    video.play()
+    video.style.display="block"
+})
+video.onended = () => {
+    video.style.display="none"
+};
     var playerpos = [];
     var teamBlueCoins = 0;
     var teamOrangeCoins = 0;
