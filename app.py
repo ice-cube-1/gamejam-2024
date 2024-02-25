@@ -10,7 +10,8 @@ def dragon():
     while True:
         threading.Event().wait(60)
         print('deleting player')
-        with playerLock:
+        if modtimer%3 != 0:
+            # with playerLock:
             lowestHP = [100,-1]
             for i in players:
                 if i.hp<lowestHP[0] and i.visible == True:
@@ -20,18 +21,18 @@ def dragon():
                 cointotals[players[i].id]-=players[i].coincount
                 socketio.emit('cointotal',cointotals)
             print(lowestHP)
-        socketio.emit('dragon')
-        socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
+            socketio.emit('dragon')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
         if modtimer%3==0:
             socketio.emit('outputscores')
             socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
-            threading.Event().wait(20)
+            threading.Event().wait(5)
             socketio.emit('startround')
             socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
-            with playerLock:
-                for i in range(len(players)):
-                    players[i].visible = True
-                    players[i].hp = 20
+            # with playerLock:
+            for i in range(len(players)):
+                players[i].visible = True
+                players[i].hp = 20
         modtimer+=1
 
 gridlx = 80
@@ -60,7 +61,9 @@ def checkplayer(x,y):
 def attack(player):
     for i in range(len(players)):
         if abs(players[i].x-player.x)<=1 and abs(players[i].y-player.y)<=1 and players[i] != player:
+            print('maybe attack')
             if (players[i].team != players[player.id].team and players[player.id].coincount >= 5) or players[player.id].sabotagecount <3:
+                print('definite attack')
                 if players[i].team == players[player.id].team:
                     players[player.id].sabotagecount+=1
                     players[player.id].hp+=1
@@ -69,8 +72,6 @@ def attack(player):
                     player[player.id].coincount-=5
                     cointotals[player[player.id].team]-=5
                     players[i].hp-=1
-                if players[i].hp <= 0:
-                    players[i].visible = False
 
 def interact(player):
     if grid[player.y][player.x] == 2:

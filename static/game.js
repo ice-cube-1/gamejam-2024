@@ -10,6 +10,7 @@ var canvas = document.getElementById("canvas");
     var lastmove = Date.now()
     let video = document.getElementById('video');
 socket.on('dragon', function() {
+    console.log('test1123')
     video.play()
     video.style.display="block"
 })
@@ -142,7 +143,7 @@ video.onended = () => {
             ctx.fillText(("Blue team - " + teamBlueCoins + " coins"), 450, 150);
 
             ctx.font = "18px Verdana"
-            var orangeX = 380;
+            var orangeX = 320;
             var blueX = 480;
             var orangeY = 200;
             var blueY = 200;
