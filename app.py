@@ -40,17 +40,16 @@ grid = [[0 for i in range(gridlx)] for j in range(gridly)]
 cointotals=[0,0]
 for i in range(gridly):
     if i == 0 or i == gridly-1:
-        grid[i] = [1 for i in range(gridlx)]
+        grid[i] = [randint(3,5) for i in range(gridlx)]
     else:
-        grid[i][-1] = 1
-        grid[i][0] = 1
+        grid[i][-1] = randint(3,5)
+        grid[i][0] = randint(3,5)
     for j in range(1,gridlx):
         if (0<i<gridlx-1) and (0<i<gridly-1):
             if randint(0,9) < 1:
-                grid[i][j] = 1
+                grid[i][j] = randint(3,5)
             elif randint(0,50) < 1:
                 grid[i][j] = 2
-
 
 def checkplayer(x,y):
     for i in players:
