@@ -24,8 +24,10 @@ def dragon():
         socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
         if modtimer%3==0:
             socketio.emit('outputscores')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
             threading.Event().wait(20)
             socketio.emit('startround')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
             with playerLock:
                 for i in range(len(players)):
                     players.visible = True
