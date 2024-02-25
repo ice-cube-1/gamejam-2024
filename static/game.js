@@ -7,6 +7,7 @@ var canvas = document.getElementById("canvas");
     var gridToRender = [];
     var screensize = [20,20];
     var showLeaderboard = false;
+    var lastmove = Date.now()
     socket.on('base_grid', function(data) {
         grid = data
     });
@@ -81,28 +82,32 @@ var canvas = document.getElementById("canvas");
         }
     });
     $(document).keydown(function(e) {
+        var currentTime = Date.now();
         var direction = '';
-        switch(e.which) {
-            case 87:
-                direction = 'W';
-                break;
-            case 65:
-                direction = 'A';
-                break;
-            case 83:
-                direction = 'S';
-                break;
-            case 68:
-                direction = 'D';
-                break;
-            case 69:
-                direction = 'E';
-                break
-            case 32:
-                direction = "Space";
-                break;
-            default:
-                return;
+        if (currentTime - lastmove >= 0.1) {
+            lastmove = currentTime
+            switch(e.which) {
+                case 87:
+                    direction = 'W';
+                    break;
+                case 65:
+                    direction = 'A';
+                    break;
+                case 83:
+                    direction = 'S';
+                    break;
+                case 68:
+                    direction = 'D';
+                    break;
+                case 69:
+                    direction = 'E';
+                    break
+                case 32:
+                    direction = "Space";
+                    break;
+                default:
+                    return;
+            }
         }
         socket.emit('update_position', { direction: direction, id: id});
     });
