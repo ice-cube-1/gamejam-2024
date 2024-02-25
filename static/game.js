@@ -32,7 +32,7 @@ var canvas = document.getElementById("canvas");
 
     socket.on('new_positions', function(data) {
         var playerpos = data.objects;
-        if (showLeaderboard == true){
+        if (showLeaderboard == false){
             screenxoffset = playerpos[id]['x']-screensize[0]/2
             screenyoffset = playerpos[id]['y']-screensize[1]/2
             if (screenxoffset < 0) {
