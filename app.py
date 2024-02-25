@@ -9,22 +9,25 @@ def dragon():
     modtimer=0
     while True:
         threading.Event().wait(60)
-        if modtimer%3!=0:
-            print('deleting player')
-            with playerLock:
-                lowestHP = [100,-1]
-                for i in players:
-                    if i.hp<lowestHP[0] and i.visible == True:
-                        lowestHP[i.team]=i.hp,i.id
-                if lowestHP[1]!=-1:
-                    players[lowestHP[1][1]].visible=False
-                print(lowestHP)
-            socketio.emit('dragon')
-            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
-        else:
+        print('deleting player')
+        with playerLock:
+            lowestHP = [100,-1]
+            for i in players:
+                if i.hp<lowestHP[0] and i.visible == True:
+                    lowestHP[i.team]=i.hp,i.id
+            if lowestHP[1]!=-1:
+                players[lowestHP[1][1]].visible=False
+                cointotals[players[i].id]-=players[i].coincount
+                socketio.emit('cointotal',cointotals)
+            print(lowestHP)
+        socketio.emit('dragon')
+        socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
+        if modtimer%3==0:
             socketio.emit('outputscores')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
             threading.Event().wait(20)
             socketio.emit('startround')
+            socketio.emit('new_positions', {"objects": [i.to_dict() for i in players]})
             with playerLock:
                 for i in range(len(players)):
                     players.visible = True
@@ -57,15 +60,17 @@ def checkplayer(x,y):
 def attack(player):
     for i in range(len(players)):
         if abs(players[i].x-player.x)<=1 and abs(players[i].y-player.y)<=1 and players[i] != player:
-            if players[i].team != players[player.id].team or players[player.id].sabotagecount <3:
+            if (players[i].team != players[player.id].team and players[player.id].coincount >= 5) or players[player.id].sabotagecount <3:
                 if players[i].team == players[player.id].team:
                     players[player.id].sabotagecount+=1
                     players[player.id].hp+=1
-                players[i].hp-=1
+                    players[i].hp-=2
+                else:
+                    player[player.id].coincount-=5
+                    cointotals[player[player.id].team]-=5
+                    players[i].hp-=1
                 if players[i].hp <= 0:
                     players[i].visible = False
-                    cointotals[players[i].id]-=players[i].coincount
-                    socketio.emit('cointotal',cointotals)
 
 def interact(player):
     if grid[player.y][player.x] == 2:
@@ -114,7 +119,8 @@ class Player:
             'hp': self.hp,
             'visible': self.visible,
             'coincount': self.coincount,
-            'sabotagecount':self.sabotagecount
+            'sabotagecount':self.sabotagecount,
+            'team':self.team
         }
 
 players = []
